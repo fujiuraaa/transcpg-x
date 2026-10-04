@@ -46,8 +46,7 @@ func (s *Supabase) do(ctx context.Context, method, u string, body any) (*http.Re
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", "Bearer "+s.ServiceKey)
-	req.Header.Set("apikey", s.ServiceKey)
+	s.auth(req)
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -143,8 +142,7 @@ func (s *Supabase) Head(ctx context.Context, objectPath string, n int) ([]byte, 
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", "Bearer "+s.ServiceKey)
-	req.Header.Set("apikey", s.ServiceKey)
+	s.auth(req)
 	req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", n-1))
 	res, err := s.HTTP.Do(req)
 	if err != nil {
@@ -158,4 +156,14 @@ func (s *Supabase) Head(ctx context.Context, objectPath string, n int) ([]byte, 
 		return nil, fmt.Errorf("supabase head: status %d", res.StatusCode)
 	}
 	return io.ReadAll(io.LimitReader(res.Body, int64(n)))
+}
+
+// auth memasang kunci server. Kunci lama (JWT "service_role", berawalan eyJ)
+// dikirim di apikey + Authorization; kunci baru "sb_secret_…" bukan JWT,
+// cukup di header apikey (gateway Supabase yang membuatkan JWT-nya).
+func (s *Supabase) auth(req *http.Request) {
+	req.Header.Set("apikey", s.ServiceKey)
+	if !strings.HasPrefix(s.ServiceKey, "sb_") {
+		req.Header.Set("Authorization", "Bearer "+s.ServiceKey)
+	}
 }

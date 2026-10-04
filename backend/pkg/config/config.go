@@ -2,7 +2,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -33,6 +32,14 @@ type Config struct {
 	LocalStorageDir string
 }
 
+// Error adalah galat konfigurasi (variabel lingkungan kurang/salah). Pesannya
+// hanya menyebut nama variabel, tidak pernah nilainya.
+type Error struct{ msg string }
+
+func (e *Error) Error() string { return e.msg }
+
+func cfgErr(format string, a ...any) error { return &Error{msg: fmt.Sprintf(format, a...)} }
+
 func Load() (Config, error) {
 	c := Config{
 		DatabaseURL:      os.Getenv("DATABASE_URL"),
@@ -54,26 +61,26 @@ func Load() (Config, error) {
 	case "", "local":
 	case "supabase":
 		if c.SupabaseURL == "" || c.SupabaseKey == "" {
-			return c, errors.New("STORAGE_DRIVER=supabase memerlukan SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY")
+			return c, cfgErr("STORAGE_DRIVER=supabase memerlukan SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY")
 		}
 	default:
-		return c, fmt.Errorf("STORAGE_DRIVER %q tidak dikenal (pilihan: supabase, local)", c.StorageDriver)
+		return c, cfgErr("STORAGE_DRIVER %q tidak dikenal (pilihan: supabase, local)", c.StorageDriver)
 	}
 	if c.OTPSender != "" && c.OTPSender != "log" {
-		return c, fmt.Errorf("OTP_SENDER %q tidak dikenal (pilihan: log)", c.OTPSender)
+		return c, cfgErr("OTP_SENDER %q tidak dikenal (pilihan: log)", c.OTPSender)
 	}
 	if v := os.Getenv("JWT_TTL"); v != "" {
 		d, err := time.ParseDuration(v)
 		if err != nil {
-			return c, fmt.Errorf("JWT_TTL: %w", err)
+			return c, cfgErr("JWT_TTL tidak valid (contoh: 720h)")
 		}
 		c.JWTTTL = d
 	}
 	if c.DatabaseURL == "" {
-		return c, errors.New("DATABASE_URL wajib diisi")
+		return c, cfgErr("DATABASE_URL wajib diisi")
 	}
 	if len(c.JWTSecret) < 32 {
-		return c, errors.New("JWT_SECRET wajib diisi, minimal 32 karakter")
+		return c, cfgErr("JWT_SECRET wajib diisi, minimal 32 karakter")
 	}
 	return c, nil
 }
