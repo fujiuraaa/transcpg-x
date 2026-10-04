@@ -1,0 +1,26 @@
+# Env
+.env
+.env.*
+!.env.example
+
+# Frontend
+node_modules/
+frontend/.nuxt/
+frontend/.output/
+frontend/.data/
+frontend/dist/
+
+# Backend
+backend/devserver
+backend/data/
+*.test
+
+# Vercel / Supabase
+.vercel/
+supabase/.temp/
+supabase/.branches/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

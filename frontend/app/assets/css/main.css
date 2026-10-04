@@ -1,0 +1,102 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Langkah warna severity I → III (urutan, satu hue merah, terang → gelap). */
+:root {
+  --sev-1: #f58b88;
+  --sev-2: #e63935;
+  --sev-3: #a51f1e;
+}
+.dark {
+  --sev-1: #fcb8b5;
+  --sev-2: #f2615b;
+  --sev-3: #c62f2b;
+}
+
+/* Gradasi merah merek — aksen latar (logo, tahap aktif, kepala halaman). */
+@layer components {
+  .bg-brand-gradient {
+    background-image: linear-gradient(135deg, var(--ui-color-primary-500), var(--ui-color-primary-700));
+  }
+  .bg-brand-soft {
+    background-image: linear-gradient(135deg, color-mix(in oklab, var(--ui-color-primary-500) 14%, transparent), color-mix(in oklab, var(--ui-color-primary-500) 3%, transparent));
+  }
+}
+
+/* Tabel data padat — dipakai di seluruh tab Detail CP. */
+@layer components {
+  .data-table {
+    @apply w-full border-separate border-spacing-0 text-sm;
+  }
+  .data-table th {
+    @apply sticky top-0 border-b border-default bg-elevated px-3 py-2 text-left text-xs font-medium text-muted;
+  }
+  .data-table td {
+    @apply border-b border-default px-3 py-2 align-top;
+  }
+  .data-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+  .data-table tbody tr:hover td {
+    @apply bg-elevated/50;
+  }
+  .data-table .num {
+    @apply text-right tabular-nums;
+  }
+  .table-wrap {
+    @apply overflow-x-auto rounded-lg border border-default;
+  }
+}
+
+/* --- Gerak halus -------------------------------------------------------------------
+   Perpindahan halaman/layout: pudar + geser 4px, singkat agar tidak terasa lambat. */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(4px);
+}
+.page-leave-to {
+  opacity: 0;
+}
+.layout-enter-active,
+.layout-leave-active {
+  transition: opacity 200ms ease;
+}
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
+}
+/* Konten yang baru dimuat (daftar, tabel) muncul lembut, bukan meloncat. */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-in {
+  animation: fade-in-up 200ms ease both;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active,
+  .layout-enter-active,
+  .layout-leave-active {
+    transition: none;
+  }
+  .page-enter-from {
+    transform: none;
+  }
+  .animate-in {
+    animation: none;
+  }
+}

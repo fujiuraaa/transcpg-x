@@ -1,0 +1,29 @@
+<!-- Layar pembuka saat aplikasi pertama dimuat (SPA): mencegah layar putih kosong. -->
+<div id="tcx-splash" role="status" aria-label="Memuat TransCPG-X">
+  <div class="tcx-logo">CP</div>
+  <p class="tcx-name">TransCPG-X</p>
+  <div class="tcx-bar"><span></span></div>
+</div>
+<style>
+  #tcx-splash {
+    position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    background: #fff; color: #18181b; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  #tcx-splash .tcx-logo {
+    display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; font-weight: 700; font-size: 16px;
+    box-shadow: 0 6px 20px -6px rgb(220 38 38 / .55);
+    animation: tcx-pulse 1.4s ease-in-out infinite;
+  }
+  #tcx-splash .tcx-name { margin: 0; font-weight: 600; letter-spacing: -.01em; }
+  #tcx-splash .tcx-bar { width: 120px; height: 3px; border-radius: 3px; overflow: hidden; background: rgb(220 38 38 / .15); }
+  #tcx-splash .tcx-bar span { display: block; width: 40%; height: 100%; border-radius: 3px; background: #dc2626; animation: tcx-slide 1.1s ease-in-out infinite; }
+  @keyframes tcx-pulse { 50% { transform: scale(.94); } }
+  @keyframes tcx-slide { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+  @media (prefers-color-scheme: dark) {
+    #tcx-splash { background: #18181b; color: #fafafa; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #tcx-splash .tcx-logo, #tcx-splash .tcx-bar span { animation: none; }
+  }
+</style>
